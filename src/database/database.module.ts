@@ -25,13 +25,13 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
         migrationsRun: true,
         migrations: [
           __dirname + '/**/migrations/*{.ts,.js}',
-          __dirname + '/**/seedings/*{.ts,.js}', 
+          __dirname + '/**/seedings/*{.ts,.js}',
         ],
         cli: {
           migrationsDir: 'src/database/migrations',
         },
-      })
-    })
+      }),
+    }),
   ],
   providers: [],
   exports: [],
