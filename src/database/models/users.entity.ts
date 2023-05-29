@@ -1,10 +1,12 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export enum Gender {
   MALE = 'MALE',
@@ -38,7 +40,7 @@ export class Users {
   @Column({ name: 'email', length: 200, nullable: false })
   email: string;
 
-  @Column({ name: 'password', length: 20, nullable: false })
+  @Column({ name: 'password', nullable: false })
   password: string;
 
   @Column({ name: 'phone', length: 15, nullable: true })
@@ -47,13 +49,13 @@ export class Users {
   @Column({ name: 'address', type: 'varchar', nullable: true })
   address: string;
 
-  @Column({ name: 'favorite_products', type: 'uuid' })
+  @Column({ name: 'favorite_products', type: 'uuid', nullable: true })
   favoriteProducts: string[];
 
   @Column({ name: 'avatar', length: 200, nullable: true })
   avatar: string;
 
-  @Column({ name: 'cart', type: 'uuid' })
+  @Column({ name: 'cart', type: 'uuid', nullable: true })
   cart: string[];
 
   @Column({ name: 'role', type: 'enum', enum: Roles, default: Roles.CUSTOMER })
@@ -64,4 +66,9 @@ export class Users {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }
