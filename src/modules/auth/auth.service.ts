@@ -1,11 +1,13 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../database/models/entities';
+import { Users } from '../../database/models/entities';
 import { Repository } from 'typeorm';
 import { RegisterDto, RegisterResponseDto } from './dtos/register.dto';
-import { ApiError } from '../common/classes/api-error';
-import { ErrorCode } from '../common/constants/errors';
+import { ApiError } from '../../common/classes/api-error';
+import { ErrorCode } from '../../common/constants/errors';
 import * as jwt from 'jsonwebtoken';
-import config from '../common/services/config.service';
+import * as bcrypt from 'bcrypt';
+import config from '../../common/services/config.service';
+import { LoginDto, LoginResponseDto } from './dtos/login.dto';
 
 export class AuthService {
   constructor(
@@ -41,5 +43,25 @@ export class AuthService {
       role,
       token,
     };
+  }
+
+  async login(request: LoginDto): Promise<LoginResponseDto> {
+    const { email, password } = request;
+    const user = await this.usersRepository.findOneBy({
+      email: email,
+    });
+    if (!user) throw new ApiError.error(ErrorCode.INVALID_EMAIL);
+    const isValidPassword = bcrypt.compareSync(password, user.password);
+    if (!isValidPassword) throw ApiError.error(ErrorCode.INVALID_PASSWORD);
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, phone: user.phone, role: user.role },
+      config.JWT_SECRET,
+      {
+        expiresIn: '1h',
+      },
+    );
+
+    return { token };
   }
 }
