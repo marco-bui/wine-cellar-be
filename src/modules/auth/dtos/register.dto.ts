@@ -9,7 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { Gender, Roles } from '../../database/models/users.entity';
+import { Gender, Roles } from '../../../database/models/users.entity';
 
 export class RegisterDto {
   @ApiProperty({ required: true, type: 'string', description: 'First name' })

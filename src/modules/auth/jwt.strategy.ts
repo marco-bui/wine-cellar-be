@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import config from '../common/services/config.service';
-import { Roles } from '../database/models/entities';
+import config from '../../common/services/config.service';
+import { Roles } from '../../database/models/entities';
 import { AuthService } from './auth.service';
 import { UnauthorizedException } from '@nestjs/common';
 
