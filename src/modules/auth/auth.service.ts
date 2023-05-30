@@ -33,7 +33,7 @@ export class AuthService {
     const newUser = this.usersRepository.create(user);
     const { id, email, phone, role } = await this.usersRepository.save(newUser);
     const token = jwt.sign({ id, email, phone, role }, config.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: config.JWT_EXPIRE_TIME,
     });
 
     return {
@@ -58,7 +58,7 @@ export class AuthService {
       { id: user.id, email: user.email, phone: user.phone, role: user.role },
       config.JWT_SECRET,
       {
-        expiresIn: '1h',
+        expiresIn: config.JWT_EXPIRE_TIME,
       },
     );
 

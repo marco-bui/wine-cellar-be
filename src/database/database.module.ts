@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService, ConfigModule } from '@nestjs/config';
+import { Connection, createConnection } from 'typeorm';
+import logger from '../common/services/logger.service';
 
 @Global()
 @Module({
@@ -36,4 +38,17 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
   providers: [],
   exports: [],
 })
-export class DatabaseModule {}
+export class DatabaseModule {
+  public async runMigrations(configService: ConfigService) {
+    const connection: Connection = await createConnection({
+      type: 'mysql',
+      host: configService.get<string>('DB_HOST'),
+      port: configService.get<number>('DB_PORT'),
+      username: configService.get<string>('DB_USERNAME'),
+      password: configService.get<string>('DB_PASSWORD'),
+      database: configService.get<string>('DB_DATABASE'),
+    });
+    logger.info('Start migration', connection.migrations);
+    return connection.runMigrations({ transaction: 'each' });
+  }
+}
