@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -39,6 +40,17 @@ export class CategoriesController {
   @ApiOkResponse({ type: Categories })
   async getListCategories(@Param() params: GetListCategoriesDto) {
     const response = await this.categoriesService.getListCategories(params);
+    return new ApiResult().success(response);
+  }
+
+  @Put('/:id')
+  @Role(Roles.ADMIN)
+  @ApiOkResponse({ type: Categories })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth()
+  async updateCategory(@Param('id') id: string, @Body() body: AddCategoryDto) {
+    const response = await this.categoriesService.updateCategory(id, body);
     return new ApiResult().success(response);
   }
 }
