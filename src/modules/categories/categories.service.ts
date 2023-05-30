@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { AddCategoryDto } from './dtos/add-category.dto';
 import { ApiError } from 'src/common/classes/api-error';
 import { ErrorCode } from 'src/common/constants/errors';
+import { GetListCategoriesDto } from './dtos/get-list-categories.dto';
 
 export class CategoriesService {
   constructor(
@@ -19,5 +20,18 @@ export class CategoriesService {
     if (existedCategory) throw ApiError.error(ErrorCode.EXISTED_CATEGORY);
     const category = this.categoriesRepository.create(request);
     return await this.categoriesRepository.save(category);
+  }
+
+  async getListCategories(request: GetListCategoriesDto) {
+    const { limit, offset } = request;
+    const [categories, total] = await this.categoriesRepository.findAndCount({
+      order: {
+        createdAt: 'DESC',
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    return { categories, total };
   }
 }
