@@ -5,6 +5,7 @@ import { AddCategoryDto } from './dtos/add-category.dto';
 import { ApiError } from 'src/common/classes/api-error';
 import { ErrorCode } from 'src/common/constants/errors';
 import { GetListCategoriesDto } from './dtos/get-list-categories.dto';
+import { UpdateCategoryDto } from './dtos/update-category.dto';
 
 export class CategoriesService {
   constructor(
@@ -33,5 +34,20 @@ export class CategoriesService {
     });
 
     return { categories, total };
+  }
+
+  async updateCategory(
+    id: string,
+    request: UpdateCategoryDto,
+  ): Promise<Categories> {
+    const category = await this.categoriesRepository.findOneBy({ id });
+    if (!category) throw ApiError.error(ErrorCode.CATEGORY_NOT_EXIST);
+
+    const { name, image } = request;
+    category.name = name || category.name;
+    category.image = image || category.image;
+
+    await this.categoriesRepository.save(category);
+    return category;
   }
 }
